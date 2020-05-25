@@ -93,10 +93,17 @@ int __cdecl main(void)
 
     // Receive until the peer shuts down the connection
     do {
-
+        memset(recvbuf, 0, DEFAULT_BUFLEN);
         iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
         if (iResult > 0) 
         {
+            if (strcmp(recvbuf, "dn\n") == 0)
+            {
+                iSendResult = send(ClientSocket, "Conn&Prog closed", 17, 0);
+                closesocket(ClientSocket);
+                WSACleanup();
+                return 1;
+            }
             FILE *fp;
             printf("Bytes received: %d\n", iResult);
 
